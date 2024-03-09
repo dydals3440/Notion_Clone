@@ -5,6 +5,7 @@ import { ChevronsLeft, MenuIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ElementRef, useEffect, useRef, useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
+import UserItem from './UserItem';
 
 export const Navigation = () => {
   const pathname = usePathname();
@@ -47,7 +48,7 @@ export const Navigation = () => {
 
     if (newWidth < 240) newWidth = 240;
     if (newWidth > 480) newWidth = 480;
-    // navbarRef.current가 나옴.
+    // && 연산자는 뒤에 true가 나옴. navbarRef.current가 나옴.
     if (sidebarRef.current && navbarRef.current) {
       sidebarRef.current.style.width = `${newWidth}px`;
       navbarRef.current.style.setProperty('left', `${newWidth}px`);
@@ -113,7 +114,7 @@ export const Navigation = () => {
           <ChevronsLeft className='h-6 w-6' />
         </div>
         <div>
-          <p>Action items</p>
+          <UserItem />
         </div>
         <div className='mt-4'>
           <p>Documents</p>
