@@ -12,12 +12,14 @@ import { ElementRef, useEffect, useRef, useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
 import { useMutation, useQuery } from 'convex/react';
 import { toast } from 'sonner';
+import { Item } from './item';
 
 import { cn } from '@/lib/utils';
 import { api } from '@/convex/_generated/api';
 
 import UserItem from './UserItem';
-import Item from './item';
+
+import { DocumentList } from './document-list';
 
 export const Navigation = () => {
   const pathname = usePathname();
@@ -145,9 +147,7 @@ export const Navigation = () => {
           <Item onClick={handleCreate} label='New Page' icon={PlusCircle} />
         </div>
         <div className='mt-4'>
-          {documents?.map((document) => (
-            <p key={document._id}>{document.title}</p>
-          ))}
+          <DocumentList />
         </div>
         <div
           onMouseDown={handleMouseDown}
