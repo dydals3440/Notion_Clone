@@ -6,17 +6,17 @@ import {
   LucideIcon,
   MoreHorizontal,
   Plus,
-  PlusIcon,
   Trash,
 } from 'lucide-react';
+import { useMutation } from 'convex/react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useUser } from '@clerk/clerk-react';
 
 import { Id } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -24,7 +24,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { useUser } from '@clerk/clerk-react';
 
 interface ItemProps {
   id?: Id<'documents'>;
@@ -59,12 +58,12 @@ export const Item = ({
   const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
     if (!id) return;
-    const promise = archive({ id });
+    const promise = archive({ id }).then(() => router.push('/documents'));
 
     toast.promise(promise, {
-      loading: 'Moving to trash....',
+      loading: 'Moving to trash...',
       success: 'Note moved to trash!',
-      error: 'Failed to archive note',
+      error: 'Failed to archive note.',
     });
   };
 
@@ -88,16 +87,15 @@ export const Item = ({
     );
 
     toast.promise(promise, {
-      loading: 'Creating a new note....',
+      loading: 'Creating a new note...',
       success: 'New note created!',
-      error: 'Failed to create a new note!',
+      error: 'Failed to create a new note.',
     });
   };
 
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
   return (
-    // inline style 이 IconElement을 재활용, 새로운 리스트를 만들어서, 각 다큐먼트는 차일드 다큐먼트가 있음.
     <div
       onClick={onClick}
       role='button'
@@ -109,11 +107,10 @@ export const Item = ({
         active && 'bg-primary/5 text-primary'
       )}
     >
-      {/* boolean으로 변경 */}
       {!!id && (
         <div
           role='button'
-          className='h-full rounded-sm hover:bg-neutral-300 dark:bg-neutral-600 mr-1'
+          className='h-full rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 mr-1'
           onClick={handleExpand}
         >
           <ChevronIcon className='h-4 w-4 shrink-0 text-muted-foreground/50' />
@@ -122,7 +119,7 @@ export const Item = ({
       {documentIcon ? (
         <div className='shrink-0 mr-2 text-[18px]'>{documentIcon}</div>
       ) : (
-        <Icon className='shrink-0 h-[18px] mr-2 text-muted-foreground' />
+        <Icon className='shrink-0 h-[18px] w-[18px] mr-2 text-muted-foreground' />
       )}
       <span className='truncate'>{label}</span>
       {isSearch && (
@@ -151,14 +148,12 @@ export const Item = ({
                 <Trash className='h-4 w-4 mr-2' />
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuSeparator>
-                <div className='text-xs text-muted-foreground p-2'>
-                  Last edited by: {user?.fullName}
-                </div>
-              </DropdownMenuSeparator>
+              <DropdownMenuSeparator />
+              <div className='text-xs text-muted-foreground p-2'>
+                Last edited by: {user?.fullName}
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* group으로 된게 hover되야, 보여짐 + 버튼이 */}
           <div
             role='button'
             onClick={onCreate}
