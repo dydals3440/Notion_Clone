@@ -28,8 +28,10 @@ import UserItem from './UserItem';
 
 import { DocumentList } from './document-list';
 import TrashBox from './trash-box';
+import { useSearch } from '@/hooks/use-search';
 
 export const Navigation = () => {
+  const search = useSearch();
   const pathname = usePathname();
   const isMobile = useMediaQuery('(max-width: 768px)');
   // useQuery가 realTime임, 계속 db가 변경되는 것을 watching함 (convex)
@@ -150,7 +152,7 @@ export const Navigation = () => {
         </div>
         <div>
           <UserItem />
-          <Item label='Search' icon={Search} isSearch onClick={() => {}} />
+          <Item label='Search' icon={Search} isSearch onClick={search.onOpen} />
           <Item label='Settings' icon={Settings} onClick={() => {}} />
           <Item onClick={handleCreate} label='New Page' icon={PlusCircle} />
         </div>
