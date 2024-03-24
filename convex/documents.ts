@@ -152,9 +152,9 @@ export const restore = mutation({
     const existingDocument = await ctx.db.get(args.id);
 
     if (!existingDocument) {
-      throw new Error('Not Found');
+      throw new Error('Not found');
     }
-    // not authenticated to restore
+
     if (existingDocument.userId !== userId) {
       throw new Error('Unauthorized');
     }
@@ -172,7 +172,7 @@ export const restore = mutation({
           isArchived: false,
         });
 
-        await recursiveRestore(child?._id);
+        await recursiveRestore(child._id);
       }
     };
 
@@ -180,7 +180,6 @@ export const restore = mutation({
       isArchived: false,
     };
 
-    //Parent
     if (existingDocument.parentDocument) {
       const parent = await ctx.db.get(existingDocument.parentDocument);
       if (parent?.isArchived) {

@@ -38,8 +38,8 @@ const TrashBox = () => {
 
     toast.promise(promise, {
       loading: 'Restoring note...',
-      success: 'Note Restored!',
-      error: 'Failed to restore note',
+      success: 'Note restored!',
+      error: ' Failed to restore note.',
     });
   };
 
@@ -48,8 +48,8 @@ const TrashBox = () => {
 
     toast.promise(promise, {
       loading: 'Deleting note...',
-      success: 'Note Deleted!',
-      error: 'Failed to delete note',
+      success: 'Note deleted!',
+      error: ' Failed to delete note.',
     });
 
     if (params.documentId === documentId) {
@@ -87,20 +87,19 @@ const TrashBox = () => {
             onClick={() => onClick(document._id)}
             className='text-sm rounded-sm w-full hover:bg-primary/5 flex items-center text-primary justify-between'
           >
-            <span>{document.title}</span>
-            <div className='truncate pl-2'>{document.title}</div>
+            <span className='truncate pl-2'>{document.title}</span>
             <div className='flex items-center'>
               <div
                 onClick={(e) => onRestore(e, document._id)}
                 role='button'
-                className='rounded-sm p-2 hover:bg-neutral-200'
+                className='rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600'
               >
                 <Undo className='h-4 w-4 text-muted-foreground' />
               </div>
               <ConfirmModal onConfirm={() => onRemove(document._id)}>
                 <div
                   role='button'
-                  className='rounded-sm p-2 hover:bg-neutral-200'
+                  className='rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600'
                 >
                   <Trash className='h-4 w-4 text-muted-foreground' />
                 </div>
