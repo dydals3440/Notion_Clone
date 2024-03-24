@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronsLeftRight } from 'lucide-react';
-import { SignOutButton, useUser } from '@clerk/clerk-react';
+import { useUser, SignOutButton } from '@clerk/clerk-react';
 
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -13,8 +13,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const UserItem = () => {
+export const UserItem = () => {
   const { user } = useUser();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -39,7 +40,7 @@ const UserItem = () => {
         alignOffset={11}
         forceMount
       >
-        <div className='flex flex-col space-y-4 p-2 text-muted-foreground'>
+        <div className='flex flex-col space-y-4 p-2'>
           <p className='text-xs font-medium leading-none text-muted-foreground'>
             {user?.emailAddresses[0].emailAddress}
           </p>
@@ -67,5 +68,3 @@ const UserItem = () => {
     </DropdownMenu>
   );
 };
-
-export default UserItem;

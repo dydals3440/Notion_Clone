@@ -9,35 +9,35 @@ import {
   Settings,
   Trash,
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { ElementRef, useEffect, useRef, useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { toast } from 'sonner';
-import { Item } from './item';
 
 import { cn } from '@/lib/utils';
 import { api } from '@/convex/_generated/api';
 import {
   Popover,
-  PopoverContent,
   PopoverTrigger,
+  PopoverContent,
 } from '@/components/ui/popover';
-
-import UserItem from './UserItem';
-
-import { DocumentList } from './document-list';
-import TrashBox from './trash-box';
 import { useSearch } from '@/hooks/use-search';
 import { useSettings } from '@/hooks/use-settings';
 
+import { UserItem } from './UserItem';
+import { Item } from './item';
+import { DocumentList } from './document-list';
+import { TrashBox } from './trash-box';
+import Navbar from './navbar';
+
 export const Navigation = () => {
+  const router = useRouter();
   const settings = useSettings();
   const search = useSearch();
+  const params = useParams();
   const pathname = usePathname();
   const isMobile = useMediaQuery('(max-width: 768px)');
-  // useQuery가 realTime임, 계속 db가 변경되는 것을 watching함 (convex)
-  const documents = useQuery(api.documents.get);
   const create = useMutation(api.documents.create);
 
   const isResizingRef = useRef(false);
@@ -77,7 +77,7 @@ export const Navigation = () => {
 
     if (newWidth < 240) newWidth = 240;
     if (newWidth > 480) newWidth = 480;
-    // && 연산자는 뒤에 true가 나옴. navbarRef.current가 나옴.
+
     if (sidebarRef.current && navbarRef.current) {
       sidebarRef.current.style.width = `${newWidth}px`;
       navbarRef.current.style.setProperty('left', `${newWidth}px`);
@@ -88,7 +88,7 @@ export const Navigation = () => {
     }
   };
 
-  const handleMouseUp = (event: MouseEvent) => {
+  const handleMouseUp = () => {
     isResizingRef.current = false;
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
@@ -105,7 +105,6 @@ export const Navigation = () => {
         isMobile ? '0' : 'calc(100% - 240px)'
       );
       navbarRef.current.style.setProperty('left', isMobile ? '100%' : '240px');
-      // aside 태그의 duration-300이기에, 300
       setTimeout(() => setIsResetting(false), 300);
     }
   };
@@ -123,7 +122,9 @@ export const Navigation = () => {
   };
 
   const handleCreate = () => {
-    const promise = create({ title: 'Untitled' });
+    const promise = create({ title: 'Untitled' }).then((documentId) =>
+      router.push(`/documents/${documentId}`)
+    );
 
     toast.promise(promise, {
       loading: 'Creating a new note...',
@@ -137,7 +138,7 @@ export const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          `group/sidebar bg-secondary overflow-y-auto relative flex w-60 flex-col z-[99999]`,
+          'group/sidebar h-full bg-secondary overflow-y-auto relative flex w-60 flex-col z-[99999]',
           isResetting && 'transition-all ease-in-out duration-300',
           isMobile && 'w-0'
         )}
@@ -146,7 +147,7 @@ export const Navigation = () => {
           onClick={collapse}
           role='button'
           className={cn(
-            `h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition`,
+            'h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition',
             isMobile && 'opacity-100'
           )}
         >
@@ -156,11 +157,11 @@ export const Navigation = () => {
           <UserItem />
           <Item label='Search' icon={Search} isSearch onClick={search.onOpen} />
           <Item label='Settings' icon={Settings} onClick={settings.onOpen} />
-          <Item onClick={handleCreate} label='New Page' icon={PlusCircle} />
+          <Item onClick={handleCreate} label='New page' icon={PlusCircle} />
         </div>
         <div className='mt-4'>
           <DocumentList />
-          <Item onClick={handleCreate} icon={Plus} label='Add a Page' />
+          <Item onClick={handleCreate} icon={Plus} label='Add a page' />
           <Popover>
             <PopoverTrigger className='w-full mt-4'>
               <Item label='Trash' icon={Trash} />
@@ -187,16 +188,20 @@ export const Navigation = () => {
           isMobile && 'left-0 w-full'
         )}
       >
-        <nav className='bg-transparent px-3 py-2 w-full'>
-          {isCollapsed && (
-            <MenuIcon
-              // sidebar 켜짐
-              onClick={resetWidth}
-              role='button'
-              className='h-6 w-6 text-muted-foreground'
-            />
-          )}
-        </nav>
+        {/* params.documentId가 있으면? Navbar를 보여주자. */}
+        {!!params.documentId ? (
+          <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
+        ) : (
+          <nav className='bg-transparent px-3 py-2 w-full'>
+            {isCollapsed && (
+              <MenuIcon
+                onClick={resetWidth}
+                role='button'
+                className='h-6 w-6 text-muted-foreground'
+              />
+            )}
+          </nav>
+        )}
       </div>
     </>
   );
