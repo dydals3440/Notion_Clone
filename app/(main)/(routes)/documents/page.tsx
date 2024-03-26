@@ -8,25 +8,28 @@ import { toast } from 'sonner';
 
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { useRouter } from 'next/navigation';
 
 const DocumentsPage = () => {
+  const router = useRouter();
   const { user } = useUser();
   // api의 documents 파일의 create함수
   const create = useMutation(api.documents.create);
 
   const onCreate = () => {
-    // 새로 만들어지는것의 타이틀을 Untitled로
-    const promise = create({ title: 'Untitled' });
+    const promise = create({ title: 'Untitled' }).then((documentId) =>
+      router.push(`/documents/${documentId}`)
+    );
+
     toast.promise(promise, {
       loading: 'Creating a new note...',
-      success: 'New Note Created!',
+      success: 'New note created!',
       error: 'Failed to create a new note.',
     });
   };
 
   return (
     <div className='h-full flex flex-col items-center justify-center space-y-4'>
-      This is a protected Documents Pages
       <Image
         src='/empty.png'
         height='300'
